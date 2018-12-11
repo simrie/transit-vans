@@ -1,0 +1,20 @@
+{
+  "name": "transit-vans",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "d3": "^5.7.0",
+    "express": "^4.16.4",
+    "faker": "^4.1.0",
+    "jquery": "^3.3.1",
+    "lodash": "^4.17.10",
+    "opn": "^5.4.0",
+    "socket.io": "^2.1.1"
+  },
+  "author": "Susan Imrie",
+  "license": "ISC"
+}

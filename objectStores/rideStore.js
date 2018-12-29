@@ -9,20 +9,14 @@
 const find = require('lodash/find');
 const forEach = require('lodash/forEach');
 const remove = require('lodash/forEach');
-const utilfs = require('./../utilityFunctions/functions');
-const rideObject = require('./../objectClasses/ride');
-const locationStore = require('./../vanRouter/locationStore');
+const utilfs = require('../utilityFunctions/functions');
+const rideObject = require('../objectClasses/ride');
+const locationStore = require('./locationStore');
 //const locationStore = require('locationStore');
 
 const rides = [];
 const ridesCompleted = [];
-
-function* generateRideId() {
-    let value = 0;
-    while(true) {
-        yield value + 1;
-    }
-};
+const idGen = utilfs.idGenerator();
 
 const createRides = (n, maxX, maxY) => {
     for (var i = 0; i < n; i++) {
@@ -35,7 +29,8 @@ const createRides = (n, maxX, maxY) => {
 };
 
 const addRide = (newRide) => {
-    newRide.rideId = generateRideId().next().value;
+    //newRide.rideId = generateRideId().next().value;
+    newRide.rideId = idGen.next().value;
     rides.push(newRide);
 };
 
@@ -61,7 +56,6 @@ const rideStore = (() => {
     return {
         rides,
         ridesCompleted,
-        //createRides,
         addRide,
         findRides,
         completeRides,

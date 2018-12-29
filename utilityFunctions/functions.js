@@ -21,8 +21,16 @@ const randomInt = (min, max) => {
     return random(min, max);
 }
 
+function* idGenerator () {
+    let value = 0;
+    while(true) {
+        value = value + 1;
+        yield value;
+    }
+}
 
 const functions = {
+    idGenerator,
     randomXY,
     randomPassenger,
     randomInt

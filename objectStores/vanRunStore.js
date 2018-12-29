@@ -10,16 +10,11 @@
 const find = require('lodash/find');
 const forEach = require('lodash/forEach');
 const remove = require('lodash/forEach');
-
+const utilfs = require('../utilityFunctions/functions');
 const rideStore = require('./rideStore.js');
-const vanRuns = {};
 
-function* generateVanRunId() {
-    let value = 0;
-    while(true) {
-        yield value + 1;
-    }
-};
+const vanRuns = {};
+const idGen = utilfs.idGenerator();
 
 const findVanRun = (predicate) => {
     return find(this.vanRuns, predicate);
@@ -42,7 +37,9 @@ const reallocateRide = (rideId, fromVanId, toVanId) => {
 };
 
 const newVanRun = (vanRun) => {
-    vanRun.vanRunId = generateVanRunId();
+    const vanRunId = idGen.next().value;
+    vanRun.vanRunId = vanRunId;
+    console.log('vanRunId: ', vanRunId);
     this.vanRuns[vanRunId] = vanRun;
 };
 

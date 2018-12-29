@@ -37,6 +37,7 @@ const initWellKnownLocations = (n, maxX, maxY) => {
         loc.visible = true;
         wellKnownLocations.push(loc);
     }
+    return wellKnownLocations;
 };
 
 const findLoc = (collection, loc) => {
@@ -84,11 +85,11 @@ const randomWellKnownLocation = () => {
 }
 
 const locationStore  = (() => {
-    initWellKnownLocations(20, 40, 40);
     return {
         destinations,
         origins,
         wellKnownLocations,
+        initWellKnownLocations,
         findLoc,
         addOrigin,
         addDestination,

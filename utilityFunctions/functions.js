@@ -5,6 +5,9 @@
  */
 
 const random = require('lodash/random');
+const abs = Math.abs;
+const sqrt = Math.sqrt;
+const pow = Math.pow;
 const faker = require('faker');
 
 const randomPassenger = () => {
@@ -29,11 +32,19 @@ function* idGenerator () {
     }
 }
 
+const calculateDistance = (loc1, loc2) => {
+    const distance = 0;
+    const xs = abs(loc1.x - loc2.x);
+    const ys = abs(loc1.y - loc2.y);
+    return sqrt(pow(xs, 2) + pow(ys, 2));
+}
+
 const functions = {
     idGenerator,
     randomXY,
     randomPassenger,
-    randomInt
+    randomInt,
+    calculateDistance
 };
 
 module.exports = functions;

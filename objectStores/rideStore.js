@@ -26,6 +26,7 @@ const createRides = (n, maxX, maxY) => {
         ride.destination = locationStore.randomWellKnownLocation();
         addRide(ride);
     };
+    return rides;
 };
 
 const addRide = (newRide) => {
@@ -52,11 +53,12 @@ const testLocationStore = () => {
 }
 
 const rideStore = (() => {
-    createRides(10, 40, 40);
+    //createRides(10, 40, 40);
     return {
         rides,
         ridesCompleted,
         addRide,
+        createRides,
         findRides,
         completeRides,
         testLocationStore

@@ -8,17 +8,23 @@
     well-known locations.
  */
 
+const dispatcher = require('./vanRouter/dispatcher');
+const rideStore = require('./objectStores/rideStore');
+const locationStore = require('./objectStores/locationStore');
+
 const gridSize = 40;
 const knownLocationCount = 20;
-const locationStore = require('./objectStores/locationStore');
-//const locationStore = require('locationStore');
-//locationStore.initWellKnownLocations(knownLocationCount, gridSize, gridSize);
 
-console.log(locationStore.wellKnownLocations);
-
-const rideStore = require('./objectStores/rideStore');
+const locations = locationStore.initWellKnownLocations(knownLocationCount, gridSize, gridSize);
 //rideStore.testLocationStore();
-//const rideStore = require('rideStore');
-//rideStore.createRides(10, gridSize, gridSize);
+const rides = rideStore.createRides(10, gridSize, gridSize);
+//console.log(rides);
 
-console.log(rideStore.rides);
+const groupedRuns = dispatcher.groupRidesByDestination(rides);
+console.log(groupedRuns);
+
+const distances = dispatcher.destinationDistanceMap(groupedRuns);
+console.log('Distances :', distances);
+
+const orderedDestinations = dispatcher.orderDestinations(distances);
+console.log('orderedDestinations :', orderedDestinations);

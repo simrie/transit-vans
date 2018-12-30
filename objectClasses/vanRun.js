@@ -4,27 +4,18 @@
     Object definition for a van run.
  */
 
-const vanRunId;
-const firstStopTimeStamp;
-const firstStopRideObject;
-const endEstimateTimestamp;
-const endDestination;
-const endActualTimestamp;
-const runTimeEstimate;
-const passengerPointsEstimate;
-
-const rideOrder = [];
-
-const vanRun = {
-    vanRunId,
-    rideOrder,
-    firstStopTimeStamp,
-    firstStopRideObject,
-    endEstimateTimestamp,
-    endDestination,
-    endActualTimestamp,
-    runTimeEstimate,
-    passengerPointsEstimate
+const vanRun = () => {
+    return {
+        vanRunId: 0,
+        rideOrder: [],
+        //firstStopTimeStamp: null,
+        //firstStopRideObject: null,
+        //endEstimateTimestamp: null,
+        endDestination: null,
+        //endActualTimestamp: null,
+        //runTimeEstimate: null,
+        //passengerPointsEstimate: null
+    }
 };
 
 module.exports = vanRun;

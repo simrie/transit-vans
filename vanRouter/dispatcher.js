@@ -9,14 +9,19 @@
 
 const _ = require('lodash');
 const utilfs = require('../utilityFunctions/functions');
-
+//const vanRunStore = require('../objectStores/vanRunStore');
 
 const groupRidesByDestination = (rides) => {
     const groupedRuns = _.groupBy(rides, 'destination.id');
+    const runs = [];
     _.forEach(groupedRuns, run => {
-        run.destination = run[0].destination;
+        const newRun = {
+            rides: run,
+            destination: run[0].destination
+        };
+        runs.push(newRun);
     })
-    return groupedRuns;
+    return runs;
 }
 
 const destinationDistanceMap = (runs) => {

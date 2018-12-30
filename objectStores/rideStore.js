@@ -50,7 +50,7 @@ const completeRides = (predicate) => {
 
 const testLocationStore = () => {
     console.log(locationStore.wellKnownLocations);
-}
+};
 
 const rideStore = (() => {
     //createRides(10, 40, 40);

@@ -9,8 +9,11 @@
  */
 
 const dispatcher = require('./vanRouter/dispatcher');
+const optimizer = require('./optimization/optimizer');
 const rideStore = require('./objectStores/rideStore');
 const locationStore = require('./objectStores/locationStore');
+const vanRunStore = require('./objectStores/vanRunStore');
+const _ = require('lodash');
 
 const gridSize = 40;
 const knownLocationCount = 20;
@@ -24,7 +27,21 @@ const groupedRuns = dispatcher.groupRidesByDestination(rides);
 console.log(groupedRuns);
 
 const distances = dispatcher.destinationDistanceMap(groupedRuns);
-console.log('Distances :', distances);
+//console.log('Distances :', distances);
 
 const orderedDestinations = dispatcher.orderDestinations(distances);
 console.log('orderedDestinations :', orderedDestinations);
+
+
+// Start Optimizing the Van Runs
+
+_.forEach(groupedRuns, run => {
+    // TODO:  put this earlier?
+    vanRunStore.newVanRun(run);
+});
+
+const combinedRuns = optimizer.combineRuns(groupedRuns, orderedDestinations);
+console.log('combinedRuns :', combinedRuns);
+
+
+//console.log('vanRuns from Store: ', vanRunStore.vanRuns);

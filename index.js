@@ -24,17 +24,22 @@ const rides = rideStore.createRides(10, gridSize, gridSize);
 //console.log(rides);
 
 const groupedRuns = dispatcher.groupRidesByDestination(rides);
-console.log('INITIAL Grouped Runs \n', groupedRuns);
+//console.log('INITIAL Grouped Runs from Dispatcher \n', groupedRuns);
 
+// These groupedRuns can be the DNA for the genetic algorithm.
+
+
+// Forced (non-genetic) Optimization by merging of groupedRuns
+// attempted with combinedRuns and doRunMerges
 const cb = () => {
     console.log('vanRuns from Store: ', vanRunStore.vanRuns);
 };
-// doRunMerges ranks the merge possibilities but is not as good as it should be
+// combinedRuns just does merges on the spot and is better than expected
+//optimizer.combineRuns(cb);
+
+// doRunMerges ranks the merge possibilities first but is not as good as it should be
 optimizer.doRunMerges(cb);
 
-// combinedRuns just does merges on the spot and is better than expected
-//const combinedRuns = optimizer.combineRuns(groupedRuns);
-//console.log('combinedRuns :', combinedRuns);
 
 
-//console.log('vanRuns from Store: ', vanRunStore.vanRuns);
+

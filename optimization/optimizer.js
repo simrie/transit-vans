@@ -52,7 +52,7 @@ const destinationDistanceMap = () => {
 const rankRunMerges = () => {
     const runs = vanRunStore.vanRuns;
     const destinationDistances = destinationDistanceMap();
-    console.log('destinationDistances ', destinationDistances);
+    //console.log('destinationDistances ', destinationDistances);
     let proximityRank = destinationDistances.length;
     const rankedMergeRuns = [];
     _.forEach(destinationDistances, od => {
@@ -79,7 +79,7 @@ const rankRunMerges = () => {
                 efficiencyRank,
                 proximityRank
             };
-            console.log('ranked: ', obj);
+            //console.log('ranked: ', obj);
             rankedMergeRuns.push(obj);
         }
     })
@@ -95,13 +95,19 @@ const sortRankedMergeRuns = () => {
 
 const doRunMerges = (cb) => {
     // TODO:  Fix it so it does some good
+    // Avoid A to B, then C to A type merges.
+    // Has to be A to B, then C to B.
+    //      The mergeForwarding is not working right
+    //      because merged runs are getting
+    //      rides merged to them that should be
+    //      forwarded to where the run got merged.
+    //      i.e., C to A where A already went to B.
+    //      The rideCounts aren't correct
     //       some fixing might be in vanRunStore
     const sortedRankedMergeRuns = sortRankedMergeRuns();
     const mergeFrom = []; //ride counts go to zero
     const mergeForwarding = {}; //ride counts go up
     const newRideCounts = {};
-    // Avoid A to B, then C to A type merges.
-    // Has to be A to B, then C to B.
     _.forEach(sortedRankedMergeRuns, obj => {
         let okToMerge = true;
         let vanRun1Id = mergeForwarding[obj.vanRun1Id] || obj.vanRun1Id;
@@ -135,16 +141,18 @@ const doRunMerges = (cb) => {
         console.log('\n');
     });
     console.log('mergeFrom ', mergeFrom);
+    console.log('mergeForwarding ', mergeForwarding);
     console.log('newRideCounts ', newRideCounts);
-    console.log('deletes if I were using it: ', _.uniq(mergeFrom));
+    console.log('Van runs that could be deleted: ', _.uniq(mergeFrom));
     cb();
 };
 
-const combineRuns = (groupedRuns) => {
+const combineRuns = (cb) => {
     // Problem:  this causes A to B, then C to A type merges.
     // Replace this functions that:
     // 1)  rank potential Run Merges
     // 2)  merge the best candidates
+    const groupedRuns = vanRunStore.vanRuns;
     const orderedDestinations = destinationDistanceMap();
     const combinedRuns = [];
     //TODO:  improve criteria for combine decision
@@ -171,7 +179,7 @@ const combineRuns = (groupedRuns) => {
             }
         }
     })
-    return vanRunStore.vanRuns;
+    cb();
 }
 
 const functions = {

@@ -22,10 +22,21 @@ const findVanRun = (predicate) => {
     return find(values(vanRuns), predicate);
 };
 
+const mergeRuns = (vanRun1Id, vanRun2Id) => {
+    const vanRun2 = findVanRun( {vanRunId: vanRun2Id} );
+    forEach(vanRun2.rideOrder, ride => {
+        if (ride) {
+            console.log('Merge reallocate ride ', ride.rideId, ' from ', vanRun2Id, ' to ', vanRun1Id);
+            vanRunStore.reallocateRide(ride.rideId, vanRun2Id, vanRun1Id);
+        }
+    });
+    const vanRun1 = findVanRun( {vanRunId: vanRun1Id} );
+    //console.log('vanRun1: ', vanRun1.rideOrder.length);
+    return vanRun1.rideOrder.length;
+};
 
 const removeVanRun = (vanRunId) => {
-   //vanRuns[vanRunId] = null;
-    return vanRuns[vanRunId];
+   vanRuns[vanRunId] = null;
 };
 
 const addUnorderedRides = (vanRunId, rides) => {
@@ -49,9 +60,10 @@ const newVanRun = (run) => {
     const vanRunId = idGen.next().value;
     vanRun.vanRunId = vanRunId;
     vanRun.endDestination = run.destination;
-    vanRun.rideOrder = run.rides;
-    console.log('new vanRunId: ', vanRunId, vanRun.endDestination.name, ' rides: ', vanRun.rideOrder.length);
+    //vanRun.rideOrder = run.rides;
     vanRuns[vanRunId] = vanRun;
+    addUnorderedRides(vanRunId, run.rides);
+    console.log('new vanRunId: ', vanRunId, vanRun.endDestination.name, ' rides: ', vanRun.rideOrder.length);
     return vanRun;
 };
 
@@ -62,7 +74,8 @@ const vanRunStore = (() => {
         reallocateRide,
         removeVanRun,
         findVanRun,
-        newVanRun
+        newVanRun,
+        mergeRuns
     }
 })();
 

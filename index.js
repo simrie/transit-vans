@@ -24,24 +24,17 @@ const rides = rideStore.createRides(10, gridSize, gridSize);
 //console.log(rides);
 
 const groupedRuns = dispatcher.groupRidesByDestination(rides);
-console.log(groupedRuns);
+console.log('INITIAL Grouped Runs \n', groupedRuns);
 
-const distances = dispatcher.destinationDistanceMap(groupedRuns);
-//console.log('Distances :', distances);
+const cb = () => {
+    console.log('vanRuns from Store: ', vanRunStore.vanRuns);
+};
+// doRunMerges ranks the merge possibilities but is not as good as it should be
+optimizer.doRunMerges(cb);
 
-const orderedDestinations = dispatcher.orderDestinations(distances);
-console.log('orderedDestinations :', orderedDestinations);
-
-
-// Start Optimizing the Van Runs
-
-_.forEach(groupedRuns, run => {
-    // TODO:  put this earlier?
-    vanRunStore.newVanRun(run);
-});
-
-const combinedRuns = optimizer.combineRuns(groupedRuns, orderedDestinations);
-console.log('combinedRuns :', combinedRuns);
+// combinedRuns just does merges on the spot and is better than expected
+//const combinedRuns = optimizer.combineRuns(groupedRuns);
+//console.log('combinedRuns :', combinedRuns);
 
 
 //console.log('vanRuns from Store: ', vanRunStore.vanRuns);

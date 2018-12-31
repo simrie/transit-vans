@@ -8,6 +8,7 @@
  */
 
 const filter = require('lodash/filter');
+const findIndex = require('lodash/findIndex');
 const locationObject = require('../objectClasses/location');
 const utilfs = require('../utilityFunctions/functions');
 const locationNames = [
@@ -40,6 +41,11 @@ const initWellKnownLocations = (n, maxX, maxY) => {
     return wellKnownLocations;
 };
 
+const findLocIndex = (collection, loc) => {
+    if (!loc) return null;
+    return findIndex(collection, { 'x': loc.x, 'y': loc.y });
+};
+
 const findLoc = (collection, loc) => {
     const byId = filter(collection, { 'id': loc.id });
     if (byId) {
@@ -53,7 +59,7 @@ const findLoc = (collection, loc) => {
         o.x = loc.x && o.y == loc.y
     });
     if (byXY) {
-        return byId;
+        return byXY;
     };
     return null;
 };
@@ -91,6 +97,7 @@ const locationStore  = (() => {
         wellKnownLocations,
         initWellKnownLocations,
         findLoc,
+        findLocIndex,
         addOrigin,
         addDestination,
         newRandomLocation,

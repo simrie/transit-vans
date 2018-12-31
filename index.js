@@ -9,6 +9,7 @@
  */
 
 const dispatcher = require('./vanRouter/dispatcher');
+const generator = require('./optimization/generator');
 const optimizer = require('./optimization/optimizer');
 const rideStore = require('./objectStores/rideStore');
 const locationStore = require('./objectStores/locationStore');
@@ -27,6 +28,8 @@ const groupedRuns = dispatcher.groupRidesByDestination(rides);
 //console.log('INITIAL Grouped Runs from Dispatcher \n', groupedRuns);
 
 // These groupedRuns can be the DNA for the genetic algorithm.
+const generations = 3;
+const dna = generator.generateDNAStrands(groupedRuns, generations);
 
 
 // Forced (non-genetic) Optimization by merging of groupedRuns
@@ -38,7 +41,7 @@ const cb = () => {
 //optimizer.combineRuns(cb);
 
 // doRunMerges ranks the merge possibilities first but is not as good as it should be
-optimizer.doRunMerges(cb);
+//optimizer.doRunMerges(cb);
 
 
 

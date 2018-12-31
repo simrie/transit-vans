@@ -8,21 +8,24 @@
  */
 
 const _ = require('lodash');
-const utilfs = require('../utilityFunctions/functions');
+//const utilfs = require('../utilityFunctions/functions');
+const rideStore = require('../objectStores/rideStore');
 const vanRunStore = require('../objectStores/vanRunStore');
 
 const groupRidesByDestination = (rides) => {
     const groupedRuns = _.groupBy(rides, 'destination.id');
     const runs = [];
     _.forEach(groupedRuns, run => {
+        const terminus = run[0].destination;
+        const terminusRide = rideStore.createRide(terminus);
         const newRun = {
             rides: run,
             destination: run[0].destination
         };
-        runs.push(newRun);
+        newRun.rides.push(terminusRide);
         vanRunStore.newVanRun(newRun);
-    })
-    return runs;
+    });
+    return vanRunStore.vanRuns;
 }
 
 const functions = {

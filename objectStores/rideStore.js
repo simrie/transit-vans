@@ -18,13 +18,22 @@ const rides = [];
 const ridesCompleted = [];
 const idGen = utilfs.idGenerator();
 
+const createRide = (origin=null, destination=null, passenger='terminus') => {
+    const ride = rideObject();
+    const name = passenger; //string
+    ride.origin = origin; //location object
+    ride.destination = destination; //location object
+    return addRide(ride);
+};
+
 const createRides = (n, maxX, maxY) => {
+    const rides = [];
     for (var i = 0; i < n; i++) {
         const ride = rideObject();
         const name = utilfs.randomPassenger();
         ride.origin = locationStore.newRandomLocation(name, maxX, maxY);
         ride.destination = locationStore.randomWellKnownLocation();
-        addRide(ride);
+        rides.push(addRide(ride));
     };
     return rides;
 };
@@ -33,6 +42,7 @@ const addRide = (newRide) => {
     //newRide.rideId = generateRideId().next().value;
     newRide.rideId = idGen.next().value;
     rides.push(newRide);
+    return newRide;
 };
 
 const findRides = (predicate) => {
@@ -58,6 +68,7 @@ const rideStore = (() => {
         rides,
         ridesCompleted,
         addRide,
+        createRide,
         createRides,
         findRides,
         completeRides,

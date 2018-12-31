@@ -22,8 +22,6 @@ const vanRunStore = require('../objectStores/vanRunStore');
 
 const vanRunMaxRides = 6;  //this might relate to van capacity
 const proximityLimit = 25; //this is arbitrary
-//let destinationDistances = [];
-//let rankedMergeRuns = [];
 
 const destinationDistanceMap = () => {
     const runs = vanRunStore.vanRuns;

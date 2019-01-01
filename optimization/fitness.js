@@ -40,6 +40,9 @@ const isValid = (rideOrder) => {
 const calcDistances = (rideOrder) => {
     const distances = [];
     let index = 0;
+    if (rideOrder.length <= 2) {
+        return 0;
+    };
     _.forEach(rideOrder, ride => {
         if (index > 2) {
             const lastRide = rideOrder[index -1];
@@ -58,7 +61,8 @@ const fitness = (rideOrder) => {
 };
 
 const functions = {
-    fitness
+    fitness,
+    isValid
 };
 
 module.exports = functions;

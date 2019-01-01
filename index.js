@@ -18,25 +18,28 @@ const _ = require('lodash');
 
 const gridSize = 40;
 const knownLocationCount = 20;
+const ridesToCreate = 30;
+const generations = 10;
 
 const locations = locationStore.initWellKnownLocations(knownLocationCount, gridSize, gridSize);
 //rideStore.testLocationStore();
-const rides = rideStore.createRides(10, gridSize, gridSize);
+const rides = rideStore.createRides(ridesToCreate, gridSize, gridSize);
 //console.log(rides);
 
 const groupedRuns = dispatcher.groupRidesByDestination(rides);
 //console.log('INITIAL Grouped Runs from Dispatcher \n', groupedRuns);
 
+const cb = () => {
+    console.log('vanRuns from Store: ', vanRunStore.vanRuns);
+};
+
 // These groupedRuns can be the DNA for the genetic algorithm.
-const generations = 3;
-const dna = generator.generateDNAStrands(groupedRuns, generations);
+const dna = generator.generateDNAStrands(groupedRuns, generations, cb);
 
 
 // Forced (non-genetic) Optimization by merging of groupedRuns
 // attempted with combinedRuns and doRunMerges
-const cb = () => {
-    console.log('vanRuns from Store: ', vanRunStore.vanRuns);
-};
+
 // combinedRuns just does merges on the spot and is better than expected
 //optimizer.combineRuns(cb);
 

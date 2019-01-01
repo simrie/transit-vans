@@ -18,17 +18,11 @@ const isValid = require('../optimization/fitness').isValid;
 const vanRunMaxRides = 6;  //this might relate to van capacity
 
 const generateDNAStrands = (generations, cb) => {
-    const scores = {};
     let groupedRuns = vanRunStore.vanRuns;
     let generationCount = 0;
     // initialize the fitness scores
-    // TODO:  move this to getScores()
-    _.forEach(groupedRuns, (run) => {
-        if (!run) return;
-        const score = fitness(run.rideOrder);
-        console.log('vanRunId, ORIGINAL score', run.vanRunId, ': ', score);
-        scores[run.vanRunId] = score;
-    });
+    let scores = getScores(groupedRuns);
+    //console.log(scores);
     // Optimize the rideOrder for each run
     while (generationCount < generations) {
         _.forEach(groupedRuns, (run) => {
@@ -65,12 +59,18 @@ const generateDNAStrands = (generations, cb) => {
             //    vanRunStore.removeVanRun
         }
     }
-    cb();
+    //cb();
 };
 
 const getScores = (groupedRuns) => {
-    //TODO:  return scores
-    return null;
+    let scores = {};
+    _.forEach(groupedRuns, (run) => {
+        //console.log('scores: map ', _.map(run.rideOrder, 'origin.name'));
+        if (!run) return;
+        const score = fitness(run.rideOrder);
+        scores[run.vanRunId] = score;
+    });
+    return scores;
 }
 
 const flips = (rideOrder, maxTries=3, includeLast=false) => {
@@ -87,8 +87,9 @@ const flips = (rideOrder, maxTries=3, includeLast=false) => {
         while (pos1 == pos2) {
             pos2 = randomInt(0, max);
         }
+        const pos1copy = copiedRideOrder[pos1];
         copiedRideOrder[pos1] = rideOrder[pos2];
-        copiedRideOrder[pos2] = rideOrder[pos1];
+        copiedRideOrder[pos2] = pos1copy;
         valid = isValid(copiedRideOrder);
         tries = tries + 1;
     }
@@ -99,31 +100,50 @@ const flips = (rideOrder, maxTries=3, includeLast=false) => {
 
 const showBalance = (groupedRuns) => {
     const available = _.filter(groupedRuns, (o) => {
-        return o.rideOrder.length -1 < vanRunMaxRides;
+        return (o.rideOrder.length -1) < vanRunMaxRides;
     });
     const overfull = _.filter(groupedRuns, (o) => {
-        return o.rideOrder.length -1 > vanRunMaxRides;
+        return (o.rideOrder.length -1) > vanRunMaxRides;
     });
-    console.log('available ', available.length);
-    console.log('overfull ', overfull.length);
+    //console.log('available ', available.length);
+    //console.log('overfull ', overfull.length);
     return {
         available,
         overfull
     };
 };
 
-const splitRuns = (modelVanRuns) => {
-    //Find the overfull van runs
+const splitRuns = (realVanRuns) => {
+    // TODO:  finish this
+    //Create a model set of van runs
+    //with small rideCount sizes
     //Count its rides by destination
     //Create a new van run with same destination
     // move some of the rides for that destination
     // to the new van run so each total
     // is less than the maximum van run size
-    let balance = showBalance(modelVanRuns);
+    const modelRuns = _.assign(realVanRuns);
+    let balance = showBalance(modelRuns);
     _.forEach(balance.overfull, run => {
-
+        let len = run.rideOrder.length;
+        const runsNeeded = Math.ceil(len/vanRunMaxRides);
+        console.log('len, needed, map ', len, runsNeeded, _.map(run.rideOrder, 'origin.name'));
+        const rideBatches = [];
+        let moved = 0;
+        for(var i=0; i< runsNeeded; i++){
+            const upTo = Math.min(moved + vanRunMaxRides, len);
+            rideBatches[i] = _.slice(run.rideOrder, moved, upTo);
+            moved = upTo;
+            // TODO:  create additional runs
+            //         with destination
+            //       and move the overflow rides
+            // something like:
+            //const modelRun = _.assign({}, run);
+            //modelRun.rideOrder = rideBatches[i];
+            //modelRuns.push(vanRunStore.newVanRun(modelRun));
+        }
     });
-    return modelVanRuns;
+    return modelRuns;
 };
 
 const dissolveRuns = (modelVanRuns) => {
@@ -142,15 +162,14 @@ const mergeRuns = (modelVanRuns) => {
 };
 
 const recombine = (maxTries=3) => {
-    let modelVanRuns = _.assign(vanRunStore.vanRuns);
-    modelVanRuns = splitRuns(modelVanRuns);
+    let modelVanRuns = splitRuns(vanRunStore.vanRuns);
     console.log('Post splitRuns');
     let balance = showBalance(modelVanRuns);
     modelVanRuns = dissolveRuns(modelVanRuns);
-    console.log('Post dissolveRuns');
+    //console.log('Post dissolveRuns');
     balance = showBalance(modelVanRuns);
     modelVanRuns = mergeRuns(modelVanRuns);
-    console.log('Post mergeRuns');
+    //console.log('Post mergeRuns');
     balance = showBalance(modelVanRuns);
     return modelVanRuns;
 };

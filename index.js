@@ -29,12 +29,18 @@ const rides = rideStore.createRides(ridesToCreate, gridSize, gridSize);
 const groupedRuns = dispatcher.groupRidesByDestination(rides);
 //console.log('INITIAL Grouped Runs from Dispatcher \n', groupedRuns);
 
+_.forEach(groupedRuns, run => {
+    console.log('groupedRuns map ', _.map(run.rideOrder, 'origin.name'));
+})
+
 const cb = () => {
     console.log('vanRuns from Store: ', vanRunStore.vanRuns);
 };
 
 // These groupedRuns can be the DNA for the genetic algorithm.
 const dna = generator.generateDNAStrands(generations, cb);
+
+
 
 
 // Forced (non-genetic) Optimization by merging of groupedRuns

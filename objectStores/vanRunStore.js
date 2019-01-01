@@ -41,6 +41,7 @@ const removeVanRun = (vanRunId) => {
 
 const addUnorderedRides = (vanRunId, rides) => {
     const vanRun = findVanRun( {vanRunId: vanRunId} );
+    //do not yet assign to rideStore objects
     //const rides = rideStore.findRides(ridesPredicate);
     forEach(rides, (ride) => {
         ride.vanRunId = vanRunId;
@@ -59,7 +60,7 @@ const newVanRun = (run) => {
     const vanRun = vanRunObject();
     const vanRunId = idGen.next().value;
     vanRun.vanRunId = vanRunId;
-    vanRun.endDestination = run.destination;
+    vanRun.endDestination = run.destination || run.endDestination;
     //vanRun.rideOrder = run.rides;
     vanRuns[vanRunId] = vanRun;
     addUnorderedRides(vanRunId, run.rides);

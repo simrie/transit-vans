@@ -22,6 +22,7 @@ const generateDNAStrands = (generations, cb) => {
     let groupedRuns = vanRunStore.vanRuns;
     let generationCount = 0;
     // initialize the fitness scores
+    // TODO:  move this to getScores()
     _.forEach(groupedRuns, (run) => {
         if (!run) return;
         const score = fitness(run.rideOrder);
@@ -49,13 +50,28 @@ const generateDNAStrands = (generations, cb) => {
     // Model recombinations of the van runs
     // Replace van runs with the best scored
     // recombinations modeled
+
     generationCount = 0;
     while (generationCount < generations) {
         generationCount++;
-        recombine(scores);
+        const fitTest = _.sum(getScores(vanRunStore.vanRuns));
+        const newVanRuns = recombine();
+        const newFitTest = _.sum(getScores(newVanRuns));
+        if (newFitTest < fitTest) {
+            // Replace vanRunStore.vanRuns with newVanRuns
+            // Create each new Van Run, reallocting rides
+            //    vanRunStore.newVanRun
+            // Delete each old Van Run by id
+            //    vanRunStore.removeVanRun
+        }
     }
     cb();
 };
+
+const getScores = (groupedRuns) => {
+    //TODO:  return scores
+    return null;
+}
 
 const flips = (rideOrder, maxTries=3, includeLast=false) => {
     const copiedRideOrder = _.assign(rideOrder);
@@ -96,7 +112,7 @@ const showBalance = (groupedRuns) => {
     };
 };
 
-const splitRun = (modelVanRuns) => {
+const splitRuns = (modelVanRuns) => {
     //Find the overfull van runs
     //Count its rides by destination
     //Create a new van run with same destination
@@ -107,21 +123,22 @@ const splitRun = (modelVanRuns) => {
     _.forEach(balance.overfull, run => {
 
     });
+    return modelVanRuns;
 };
 
 const dissolveRuns = (modelVanRuns) => {
     // Deal with invalid runs
     // or runs with very low ride counts
-    // Move each ride to other runs
-    // Append destination to the other run
-    // Make sure rideOrder is valid
+    // Like split runs, move to
+    // runs with nothing but a single origin and destination
+    return modelVanRuns;
 };
 
 const mergeRuns = (modelVanRuns) => {
     // merge the available van runs
+    // make sure the ride totals are less than the maximum
     // flip ride orders until they are valid
-    // Make sure the new total is less than the maximum
-
+    return modelVanRuns;
 };
 
 const recombine = (maxTries=3) => {

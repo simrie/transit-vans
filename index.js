@@ -34,7 +34,7 @@ const cb = () => {
 };
 
 // These groupedRuns can be the DNA for the genetic algorithm.
-const dna = generator.generateDNAStrands(groupedRuns, generations, cb);
+const dna = generator.generateDNAStrands(generations, cb);
 
 
 // Forced (non-genetic) Optimization by merging of groupedRuns

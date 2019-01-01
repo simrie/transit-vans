@@ -10,43 +10,50 @@
  */
 
 const _ = require('lodash');
+const vanRunStore = require('../objectStores/vanRunStore');
 const randomInt = require('../utilityFunctions/functions').randomInt;
 const fitness = require('../optimization/fitness').fitness;
 const isValid = require('../optimization/fitness').isValid;
 
-const generateDNAStrands = (groupedRuns, generations, cb) => {
+const vanRunMaxRides = 6;  //this might relate to van capacity
+
+const generateDNAStrands = (generations, cb) => {
     const scores = {};
-    //const rideOrders = {};
+    let groupedRuns = vanRunStore.vanRuns;
     let generationCount = 0;
     // initialize the fitness scores
     _.forEach(groupedRuns, (run) => {
         if (!run) return;
         const score = fitness(run.rideOrder);
-        console.log('vanRunId, score', run.vanRunId, ': ', score);
+        console.log('vanRunId, ORIGINAL score', run.vanRunId, ': ', score);
         scores[run.vanRunId] = score;
-        //rideOrders[run.vanRunId] = run.rideOrder;
     });
-    // this should optimize the rideOrder for each run
+    // Optimize the rideOrder for each run
     while (generationCount < generations) {
-        console.log('start while ', generationCount);
         _.forEach(groupedRuns, (run) => {
             if (!run) return;
             const vanRunId = run.vanRunId;
-            console.log('vanRunId, OLD score ', vanRunId, ': ', scores[vanRunId]);
             let newRunOrder = flips(run.rideOrder);
             let newScore = fitness(newRunOrder);
             if (newScore < scores[vanRunId]) {
                 scores[vanRunId] = newScore;
                 run.rideOrder = newRunOrder;
-                console.log('vanRunId, NEW score', vanRunId, ': ', newScore);
             }
         }); // end forEach run
         generationCount++;
-    }// end while
-    // this should attempt to combine van runs
-
-
-    // show results
+    }// end while for optimizing ride orders
+    _.forEach(groupedRuns, (run) => {
+        if (!run) return;
+        console.log('vanRunId, FINAL score', run.vanRunId, ': ', scores[run.vanRunId], ' rideCount ', run.rideOrder.length);
+    });
+    // Model recombinations of the van runs
+    // Replace van runs with the best scored
+    // recombinations modeled
+    generationCount = 0;
+    while (generationCount < generations) {
+        generationCount++;
+        recombine(scores);
+    }
     cb();
 };
 
@@ -70,11 +77,65 @@ const flips = (rideOrder, maxTries=3, includeLast=false) => {
         tries = tries + 1;
     }
     if (valid) return copiedRideOrder;
+    console.log('INVALID rideOrder ');
     return rideOrder;
 };
 
-const combinations = (groupedRuns) => {
+const showBalance = (groupedRuns) => {
+    const available = _.filter(groupedRuns, (o) => {
+        return o.rideOrder.length -1 < vanRunMaxRides;
+    });
+    const overfull = _.filter(groupedRuns, (o) => {
+        return o.rideOrder.length -1 > vanRunMaxRides;
+    });
+    console.log('available ', available.length);
+    console.log('overfull ', overfull.length);
+    return {
+        available,
+        overfull
+    };
+};
 
+const splitRun = (modelVanRuns) => {
+    //Find the overfull van runs
+    //Count its rides by destination
+    //Create a new van run with same destination
+    // move some of the rides for that destination
+    // to the new van run so each total
+    // is less than the maximum van run size
+    let balance = showBalance(modelVanRuns);
+    _.forEach(balance.overfull, run => {
+
+    });
+};
+
+const dissolveRuns = (modelVanRuns) => {
+    // Deal with invalid runs
+    // or runs with very low ride counts
+    // Move each ride to other runs
+    // Append destination to the other run
+    // Make sure rideOrder is valid
+};
+
+const mergeRuns = (modelVanRuns) => {
+    // merge the available van runs
+    // flip ride orders until they are valid
+    // Make sure the new total is less than the maximum
+
+};
+
+const recombine = (maxTries=3) => {
+    let modelVanRuns = _.assign(vanRunStore.vanRuns);
+    modelVanRuns = splitRuns(modelVanRuns);
+    console.log('Post splitRuns');
+    let balance = showBalance(modelVanRuns);
+    modelVanRuns = dissolveRuns(modelVanRuns);
+    console.log('Post dissolveRuns');
+    balance = showBalance(modelVanRuns);
+    modelVanRuns = mergeRuns(modelVanRuns);
+    console.log('Post mergeRuns');
+    balance = showBalance(modelVanRuns);
+    return modelVanRuns;
 };
 
 const functions = {

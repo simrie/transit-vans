@@ -15,7 +15,7 @@ const randomInt = require('../utilityFunctions/functions').randomInt;
 const fitness = require('../optimization/fitness').fitness;
 const isValid = require('../optimization/fitness').isValid;
 
-const vanRunMaxRides = 6;  //this might relate to van capacity
+const vanRunMaxRiders = 6;  //this might relate to van capacity
 
 const generateDNAStrands = (generations, cb) => {
     let groupedRuns = vanRunStore.vanRuns;
@@ -42,14 +42,18 @@ const generateDNAStrands = (generations, cb) => {
         if (!run) return;
         console.log('Optimized score vanRunId:', run.vanRunId, ': ', unoptimizedScores[run.vanRunId], ' to ', scores[run.vanRunId], ' stop count ', run.rideOrder.length);
     });
+    //cb();
+};
+
+const recombineDNAStrands = (recombinations, cb) => {
     // Model recombinations of the van runs
     // Replace van runs with the best scored
     // recombinations modeled
-
-    generationCount = 0;
-    while (generationCount < generations) {
-        generationCount++;
-        const fitTest = _.sum(getScores(vanRunStore.vanRuns));
+    let groupedRuns = vanRunStore.vanRuns;
+    let recombinationCount = 0;
+    while (recombinationCount < recombinations) {
+        recombinationCount++;
+        const fitTest = _.sum(getScores(groupedRuns));
         const newVanRuns = recombine();
         const newFitTest = _.sum(getScores(newVanRuns));
         if (newFitTest < fitTest) {
@@ -102,10 +106,10 @@ const flips = (rideOrder, maxTries=3, includeLast=false) => {
 
 const availability = (groupedRuns) => {
     const available = _.filter(groupedRuns, (o) => {
-        return (o.rideOrder.length -1) < vanRunMaxRides;
+        return (o.rideOrder.length -1) < vanRunMaxRiders;
     });
     const overfull = _.filter(groupedRuns, (o) => {
-        return (o.rideOrder.length -1) > vanRunMaxRides;
+        return (o.rideOrder.length -1) > vanRunMaxRiders;
     });
     //console.log('available ', available.length);
     //console.log('overfull ', overfull.length);
@@ -117,34 +121,17 @@ const availability = (groupedRuns) => {
 
 const splitRuns = (realVanRuns) => {
     // TODO:  finish this
-    //Create a model set of van runs
-    //with small rideCount sizes
-    //Count its rides by destination
-    //Create a new van run with same destination
+    // Create a model set of van runs
+    // with small rideCount sizes
+    // Count its rides by destination
+    // Create a new van run with same destination
     // move some of the rides for that destination
     // to the new van run so each total
     // is less than the maximum van run size
     const modelRuns = _.assign(realVanRuns);
     let balance = availability(modelRuns);
-    _.forEach(balance.overfull, run => {
-        let len = run.rideOrder.length;
-        const runsNeeded = Math.ceil(len/vanRunMaxRides);
-        console.log('len, needed, origin ', len, runsNeeded, _.map(run.rideOrder, 'origin.name')[0]);
-        const rideBatches = [];
-        let moved = 0;
-        for(var i=0; i< runsNeeded; i++){
-            const upTo = Math.min(moved + vanRunMaxRides, len);
-            rideBatches[i] = _.slice(run.rideOrder, moved, upTo);
-            moved = upTo;
-            // TODO:  create additional runs
-            //         with destination
-            //       and move the overflow rides
-            // something like:
-            //const modelRun = _.assign({}, run);
-            //modelRun.rideOrder = rideBatches[i];
-            //modelRuns.push(vanRunStore.newVanRun(modelRun));
-        }
-    });
+    console.log('vanRunMaxRiders: ', vanRunMaxRiders);
+    console.log('available: ', balance.available.length || 0, ' overfull: ', balance.overfull.length || 0);
     return modelRuns;
 };
 
@@ -165,6 +152,8 @@ const mergeRuns = (modelVanRuns) => {
 
 const recombine = (maxTries=3) => {
     let modelVanRuns = splitRuns(vanRunStore.vanRuns);
+    return modelVanRuns;
+    // TODO:  redo recombination stragegy
     console.log('\nRecombine, after splitRuns()');
     let balance = availability(modelVanRuns);
     modelVanRuns = dissolveRuns(modelVanRuns);
@@ -177,7 +166,8 @@ const recombine = (maxTries=3) => {
 };
 
 const functions = {
-    generateDNAStrands
+    generateDNAStrands,
+    recombineDNAStrands
 };
 
 module.exports = functions;

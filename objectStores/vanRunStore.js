@@ -67,7 +67,7 @@ const newVanRun = (run) => {
     //vanRun.rideOrder = run.rides;
     vanRuns[vanRunId] = vanRun;
     addUnorderedRides(vanRunId, run.rides);
-    console.log('new vanRunId: ', vanRunId, vanRun.endDestination.name, ' rides: ', vanRun.rideOrder.length);
+    console.log('new vanRunId: ', vanRunId, vanRun.endDestination.name, ' stops: ', vanRun.rideOrder.length);
     return vanRun;
 };
 

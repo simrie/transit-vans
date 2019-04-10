@@ -53,6 +53,9 @@ const reallocateRide = (rideId, fromVanId, toVanId) => {
     const fromVanRun = findVanRun( {vanRunId: fromVanId} );
     const rideOrder = fromVanRun.rideOrder;
     const rides = remove(rideOrder, { rideId });
+    // TODO:  This ride should be inserted
+    // next to closest existing ride stop,
+    // not added to the end
     addUnorderedRides(toVanId, rides);
 };
 

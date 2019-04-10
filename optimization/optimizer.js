@@ -12,7 +12,7 @@
         requestedArrivalTime
 
     Any ride dropoff location might be
-        destinated as a majorDestinationObject
+        designated as a majorDestinationObject
 
  */
 
@@ -147,7 +147,7 @@ const doRunMerges = (cb) => {
 
 const combineRuns = (cb) => {
     // Problem:  this causes A to B, then C to A type merges.
-    // Replace this functions that:
+    // Replace the functions that:
     // 1)  rank potential Run Merges
     // 2)  merge the best candidates
     const groupedRuns = vanRunStore.vanRuns;

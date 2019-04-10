@@ -22,7 +22,7 @@ const generateDNAStrands = (generations, cb) => {
     let generationCount = 0;
     // initialize the fitness scores
     let scores = getScores(groupedRuns);
-    //console.log(scores);
+    let unoptimizedScores = _.assign([], scores);
     // Optimize the rideOrder for each run
     while (generationCount < generations) {
         _.forEach(groupedRuns, (run) => {
@@ -31,6 +31,7 @@ const generateDNAStrands = (generations, cb) => {
             let newRunOrder = flips(run.rideOrder);
             let newScore = fitness(newRunOrder);
             if (newScore < scores[vanRunId]) {
+                console.log("generator improved score from flips for vanRunId: ", vanRunId)
                 scores[vanRunId] = newScore;
                 run.rideOrder = newRunOrder;
             }
@@ -39,7 +40,7 @@ const generateDNAStrands = (generations, cb) => {
     }// end while for optimizing ride orders
     _.forEach(groupedRuns, (run) => {
         if (!run) return;
-        console.log('vanRunId, FINAL score', run.vanRunId, ': ', scores[run.vanRunId], ' rideCount ', run.rideOrder.length);
+        console.log('Optimized score vanRunId:', run.vanRunId, ': ', unoptimizedScores[run.vanRunId], ' to ', scores[run.vanRunId], ' stop count ', run.rideOrder.length);
     });
     // Model recombinations of the van runs
     // Replace van runs with the best scored
@@ -52,6 +53,7 @@ const generateDNAStrands = (generations, cb) => {
         const newVanRuns = recombine();
         const newFitTest = _.sum(getScores(newVanRuns));
         if (newFitTest < fitTest) {
+            console.log('recombine improvement');
             // Replace vanRunStore.vanRuns with newVanRuns
             // Create each new Van Run, reallocting rides
             //    vanRunStore.newVanRun
@@ -98,7 +100,7 @@ const flips = (rideOrder, maxTries=3, includeLast=false) => {
     return rideOrder;
 };
 
-const showBalance = (groupedRuns) => {
+const availability = (groupedRuns) => {
     const available = _.filter(groupedRuns, (o) => {
         return (o.rideOrder.length -1) < vanRunMaxRides;
     });
@@ -123,11 +125,11 @@ const splitRuns = (realVanRuns) => {
     // to the new van run so each total
     // is less than the maximum van run size
     const modelRuns = _.assign(realVanRuns);
-    let balance = showBalance(modelRuns);
+    let balance = availability(modelRuns);
     _.forEach(balance.overfull, run => {
         let len = run.rideOrder.length;
         const runsNeeded = Math.ceil(len/vanRunMaxRides);
-        console.log('len, needed, map ', len, runsNeeded, _.map(run.rideOrder, 'origin.name'));
+        console.log('len, needed, origin ', len, runsNeeded, _.map(run.rideOrder, 'origin.name')[0]);
         const rideBatches = [];
         let moved = 0;
         for(var i=0; i< runsNeeded; i++){
@@ -163,14 +165,14 @@ const mergeRuns = (modelVanRuns) => {
 
 const recombine = (maxTries=3) => {
     let modelVanRuns = splitRuns(vanRunStore.vanRuns);
-    console.log('Post splitRuns');
-    let balance = showBalance(modelVanRuns);
+    console.log('\nRecombine, after splitRuns()');
+    let balance = availability(modelVanRuns);
     modelVanRuns = dissolveRuns(modelVanRuns);
     //console.log('Post dissolveRuns');
-    balance = showBalance(modelVanRuns);
+    balance = availability(modelVanRuns);
     modelVanRuns = mergeRuns(modelVanRuns);
     //console.log('Post mergeRuns');
-    balance = showBalance(modelVanRuns);
+    balance = availability(modelVanRuns);
     return modelVanRuns;
 };
 

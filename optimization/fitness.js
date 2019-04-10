@@ -10,7 +10,7 @@
     order after the origin.
 
     If the van run ride order is invalid
-    the fitness rank is an automatic 0.
+    the fitness rank is an automatic -1.
  */
 
 const _ = require('lodash');
@@ -40,11 +40,8 @@ const isValid = (rideOrder) => {
 const calcDistances = (rideOrder) => {
     const distances = [];
     let index = 0;
-    if (rideOrder.length <= 2) {
-        return 0;
-    };
     _.forEach(rideOrder, ride => {
-        if (index > 2) {
+        if (index >= 1) {
             const lastRide = rideOrder[index -1];
             const d = calc(lastRide.origin, ride.origin);
             distances.push(d);
@@ -56,7 +53,7 @@ const calcDistances = (rideOrder) => {
 
 const fitness = (rideOrder) => {
     const valid = isValid(rideOrder);
-    if (!valid) return 0;
+    if (!valid) return -1;
     return calcDistances(rideOrder);
 };
 

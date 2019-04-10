@@ -19,7 +19,7 @@ const _ = require('lodash');
 const gridSize = 40;
 const knownLocationCount = 20;
 const ridesToCreate = 30;
-const generations = 10;
+const generations = 80;
 
 const locations = locationStore.initWellKnownLocations(knownLocationCount, gridSize, gridSize);
 //rideStore.testLocationStore();

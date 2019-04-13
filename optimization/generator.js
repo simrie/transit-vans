@@ -30,7 +30,7 @@ const generateDNAStrands = (generations, cb) => {
             const vanRunId = run.vanRunId;
             let newRunOrder = flips(run.rideOrder);
             let newScore = fitness(newRunOrder);
-            if (newScore < scores[vanRunId]) {
+            if (newScore > 0 && newScore < scores[vanRunId]) {
                 console.log("generator improved score from flips for vanRunId: ", vanRunId)
                 scores[vanRunId] = newScore;
                 run.rideOrder = newRunOrder;

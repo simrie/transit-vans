@@ -19,7 +19,8 @@ const _ = require('lodash');
 const gridSize = 40;
 const knownLocationCount = 20;
 const ridesToCreate = 30;
-const generations = 80;
+const generations = 100;
+const recombinations = 1;
 
 const locations = locationStore.initWellKnownLocations(knownLocationCount, gridSize, gridSize);
 //rideStore.testLocationStore();
@@ -40,7 +41,7 @@ const cb = () => {
 // These groupedRuns can be the DNA for the genetic algorithm.
 const dna = generator.generateDNAStrands(generations, cb);
 
-const rec = generator.recombineDNAStrands(1, cb);
+const recombined = generator.recombineDNAStrands(recombinations, cb);
 
 
 // Forced (non-genetic) Optimization by merging of groupedRuns

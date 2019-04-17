@@ -8,8 +8,9 @@
  */
 
 const filter = require('lodash/filter');
-const locationObject = require('./../objectClasses/location');
-const utilfs = require('./../utilityFunctions/functions');
+const findIndex = require('lodash/findIndex');
+const locationObject = require('../objectClasses/location');
+const utilfs = require('../utilityFunctions/functions');
 const locationNames = [
     'VA Hospital',
     'Amtrak',
@@ -21,32 +22,28 @@ const locationNames = [
     'Rehabilitation Center'
 ];
 
-
 const wellKnownLocations = [];
 const destinations = {};
 const origins = {};
-
-function* generateLocationId() {
-    let value = 0;
-    while(true) {
-        value = value + 1;
-        yield value;
-    }
-};
+const idGenerator = utilfs.idGenerator();
 
 const initWellKnownLocations = (n, maxX, maxY) => {
     for (let i = 0; i < locationNames.length; i++) {
-        const id = generateLocationId().next();
-        console.log(id);
         const loc = locationObject();
         const xy = utilfs.randomXY(maxX, maxY);
-        loc.id = id.value;
+        loc.id = idGenerator.next().value;
         loc.x = xy.x;
         loc.y = xy.y;
         loc.name = locationNames[i];
         loc.visible = true;
         wellKnownLocations.push(loc);
     }
+    return wellKnownLocations;
+};
+
+const findLocIndex = (collection, loc) => {
+    if (!loc) return null;
+    return findIndex(collection, { 'x': loc.x, 'y': loc.y });
 };
 
 const findLoc = (collection, loc) => {
@@ -62,7 +59,7 @@ const findLoc = (collection, loc) => {
         o.x = loc.x && o.y == loc.y
     });
     if (byXY) {
-        return byId;
+        return byXY;
     };
     return null;
 };
@@ -89,41 +86,23 @@ const newRandomLocation = (name, maxX, maxY) => {
 };
 
 const randomWellKnownLocation = () => {
-    const rint = utilfs.randomInt(0, wellKnownLocations.length);
+    const rint = utilfs.randomInt(0, wellKnownLocations.length-1);
     return wellKnownLocations[rint];
 }
 
 const locationStore  = (() => {
-    initWellKnownLocations(20, 40, 40);
-    return {
-        destinations,
-        origins,
-        wellKnownLocations,
-        //initWellKnownLocations,
-        findLoc,
-        addOrigin,
-        addDestination,
-        newRandomLocation,
-        randomWellKnownLocation,
-        generateLocationId
-    }
-})();
-
-/*
-const locationStore = () => {
     return {
         destinations,
         origins,
         wellKnownLocations,
         initWellKnownLocations,
         findLoc,
+        findLocIndex,
         addOrigin,
         addDestination,
         newRandomLocation,
         randomWellKnownLocation
     }
-}
-*/
-
+})();
 
 module.exports = locationStore;

@@ -6,7 +6,6 @@
         all just be "location" objects?
  */
 
-
 const ride = () => {
     return {
         rideId: 0,

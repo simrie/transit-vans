@@ -8,7 +8,7 @@
     locations such as home address.
  */
 
-const locationStore = require('./../vanRouter/locationStore');
+const locationStore = require('../objectStores/locationStore');
 const visible = false;
 
 // store phonetics for use with voice reservation system

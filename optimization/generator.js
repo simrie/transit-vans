@@ -15,7 +15,25 @@ const randomInt = require('../utilityFunctions/functions').randomInt;
 const fitness = require('../optimization/fitness').fitness;
 const isValid = require('../optimization/fitness').isValid;
 
+// TODO:  make vanRunMaxRiders depend on vehicle assigned to run
 const vanRunMaxRiders = 6;  //this might relate to van capacity
+
+const runFlipper = (groupedRuns) => {
+    let scores = getScores(groupedRuns);
+    let unoptimizedScores = _.assign([], scores);
+    _.forEach(groupedRuns, (run) => {
+        if (!run) return;
+        const vanRunId = run.vanRunId;
+        let newRunOrder = flips(run.rideOrder);
+        let newScore = fitness(newRunOrder);
+        if (newScore > 0 && newScore < scores[vanRunId]) {
+            console.log("generator improved score from flips for vanRunId: ", vanRunId)
+            scores[vanRunId] = newScore;
+            run.rideOrder = newRunOrder;
+        }
+    }); // end forEach run
+    return groupedRuns;
+}
 
 const generateDNAStrands = (generations, cb) => {
     let groupedRuns = vanRunStore.vanRuns;
@@ -30,7 +48,7 @@ const generateDNAStrands = (generations, cb) => {
             const vanRunId = run.vanRunId;
             let newRunOrder = flips(run.rideOrder);
             let newScore = fitness(newRunOrder);
-            if (newScore < scores[vanRunId]) {
+            if (newScore > 0 && newScore < scores[vanRunId]) {
                 console.log("generator improved score from flips for vanRunId: ", vanRunId)
                 scores[vanRunId] = newScore;
                 run.rideOrder = newRunOrder;
@@ -42,7 +60,8 @@ const generateDNAStrands = (generations, cb) => {
         if (!run) return;
         console.log('Optimized score vanRunId:', run.vanRunId, ': ', unoptimizedScores[run.vanRunId], ' to ', scores[run.vanRunId], ' stop count ', run.rideOrder.length);
     });
-    //cb();
+    cb();
+    return groupedRuns;
 };
 
 const recombineDNAStrands = (recombinations, cb) => {
@@ -167,7 +186,8 @@ const recombine = (maxTries=3) => {
 
 const functions = {
     generateDNAStrands,
-    recombineDNAStrands
+    recombineDNAStrands,
+    runFlipper
 };
 
 module.exports = functions;
